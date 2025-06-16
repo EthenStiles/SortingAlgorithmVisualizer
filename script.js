@@ -1,5 +1,5 @@
 let array = [];
-let waitTime = 50;
+let waitTime = 25;
 let stopSorting = false;
 let numComparisons = 0;
 let comparisonElt = document.getElementById("comparisons");
