@@ -227,7 +227,7 @@ async function playSortedAnimation()
     }
 }
 
-function startSort() 
+async function startSort() 
 {
     const selectedAlgorithm = document.getElementById('algorithm-select').value;
     numComparisons = 0;
@@ -237,19 +237,19 @@ function startSort()
     switch (selectedAlgorithm) 
     {
         case 'bubble':
-            bubbleSort();
+            await bubbleSort();
             break;
         case 'insertion':
-            insertionSort();
+            await insertionSort();
             break;
         case 'selection':
-            selectionSort();
+            await selectionSort();
             break;
         case 'quick':
-            quickSort();
+            await quickSort();
             break;
         case 'bogo':
-            bogoSort();
+            await bogoSort();
             break;
         default:
             alert('Please select a valid algorithm.');
@@ -259,12 +259,12 @@ function startSort()
 
 function disableControls() 
 {
-    //sortButton.disabled = true;
+    document.getElementById("sort").disabled = true;
 }
 
 function enableControls() 
 {
-    //sortButton.disabled = false;
+    document.getElementById("sort").disabled = false;
 }
 
 window.onload = generateBars();
