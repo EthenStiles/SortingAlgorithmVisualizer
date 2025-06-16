@@ -1,5 +1,5 @@
 let array = [];
-let waitTime = 0;
+let waitTime = 50;
 let stopSorting = false;
 let numComparisons = 0;
 let comparisonElt = document.getElementById("comparisons");
@@ -46,6 +46,8 @@ async function bubbleSort()
         for (let j = 0; j < bars.length - i - 1; j++) 
         {
             if (stopSorting) return;
+
+            bars[j + 1].classList.add('current');
             
             const h1 = parseInt(bars[j].style.height);
             const h2 = parseInt(bars[j + 1].style.height);
@@ -58,6 +60,8 @@ async function bubbleSort()
                 bars[j + 1].style.height = `${h1}px`;
                 await sleep(waitTime);
             }
+
+            bars[j + 1].classList.remove('current');
         }
     }
 
@@ -72,11 +76,21 @@ async function insertionSort()
         let j = i;
         while (j > 0) 
         {
+            if (stopSorting) return;
+            //const barA = bars[j - 1];
+            const barB = bars[j];
+
+            // Add highlight to both bars being compared
+            //barA.classList.add('current');
+            barB.classList.add('current');
+            
             const height1 = parseInt(bars[j - 1].style.height);
             const height2 = parseInt(bars[j].style.height);
 
             numComparisons++;
             updateStats();
+
+            await sleep(waitTime);
 
             if (height1 > height2) 
             {
@@ -86,13 +100,18 @@ async function insertionSort()
                 bars[j - 1].style.height = temp;
 
                 j--;
-                await sleep(waitTime);
+                
             } 
 
             else 
             {
+                //barA.classList.remove('current');
+                barB.classList.remove('current');
                 break;
             }
+
+            //barA.classList.remove('current');
+            barB.classList.remove('current');
         }
     }
 
@@ -107,14 +126,27 @@ async function selectionSort()
         let minIndex = i;
         for (let j = i + 1; j < bars.length; j++) 
         {
+            if (stopSorting) return;
+            
+            bars[j].classList.add('current');
+            
+            numComparisons++;
+            updateStats();
+
+            await sleep(waitTime);
+            
             if (parseInt(bars[j].style.height) < parseInt(bars[minIndex].style.height)) 
             {
+                bars[minIndex].classList.remove('current-min');
+                
                 minIndex = j;
+
+                bars[minIndex].classList.add('current-min');
             }
+
+            bars[j].classList.remove('current');
         }
 
-        numComparisons++;
-        updateStats();
         if (minIndex !== i) 
         {
             let temp = bars[i].style.height;
@@ -122,51 +154,60 @@ async function selectionSort()
             bars[minIndex].style.height = temp;
             await sleep(waitTime);
         }
+
+        bars[minIndex].classList.remove('current-min');
     }
 
   playSortedAnimation();
 }
 
-async function quickSort(start = 0, end = null) {
+async function quickSort(bars, start = 0, end = null) {
   
     if (stopSorting) return;
-    const bars = document.querySelectorAll(".bar");
     if (end === null) end = bars.length - 1;
 
     if (start < end) 
     {
         let pivotIndex = await partition(bars, start, end);
-        await quickSort(start, pivotIndex - 1);
-        await quickSort(pivotIndex + 1, end);
+        await quickSort(bars, start, pivotIndex - 1);
+        await quickSort(bars, pivotIndex + 1, end);
     }
-
-    if (isSorted(bars)) playSortedAnimation();
 }
 
 async function partition(bars, low, high) 
 {
-    if (stopSorting) return;
     let pivotHeight = parseInt(bars[high].style.height);
 
     let i = low - 1;
     for (let j = low; j < high; j++) 
     {
+        if (stopSorting) return;
+        bars[j].classList.add('current');  // Highlight the current bar being compared
+    
+        numComparisons++;
+        updateStats();
+
         let currentHeight = parseInt(bars[j].style.height);
-        await sleep(waitTime);
 
         if (currentHeight < pivotHeight) 
         {
             i++;
             // swap bars[i] and bars[j]
             swapHeights(bars[i], bars[j]);
+
+            bars[i].classList.add('swapped'); // highlight swapped bar
             await sleep(waitTime);
+            bars[i].classList.remove('swapped');
         } 
+
+        bars[j].classList.remove('current');
     }
 
-  await sleep(waitTime);
-  swapHeights(bars[i + 1], bars[high]);
+    swapHeights(bars[i + 1], bars[high]);
+    await sleep(waitTime)
+    bars[high].classList.remove('pivot');
 
-  return i + 1;
+    return i + 1;
 }
 
 function swapHeights(bar1, bar2) 
@@ -225,7 +266,7 @@ async function playSortedAnimation()
     const bars = document.querySelectorAll(".bar");
     for (let i = 0; i < bars.length; i++)
     {
-        bars[i].style.backgroundColor = "red";
+        bars[i].style.backgroundColor = "indianred";
         await sleep(20);
     }
 }
@@ -249,7 +290,9 @@ async function startSort()
             await selectionSort();
             break;
         case 'quick':
-            await quickSort();
+            const bars = document.querySelectorAll(".bar");
+            await quickSort(bars);
+            playSortedAnimation();
             break;
         case 'bogo':
             await bogoSort();

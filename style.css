@@ -7,8 +7,22 @@ body
 
 .controls 
 {
-    margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px auto;
+  gap: 10px;
 }
+
+.control-top,
+.control-bottom 
+{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
 
 #visualization-window 
 {
@@ -30,7 +44,29 @@ body
     border: 1px solid black;
 }
 
-#stats {
+.bar.current 
+{
+  background-color: orange !important;
+  border-color: red !important;
+}
+
+.bar.current-min 
+{
+  background-color: red !important;
+}
+
+.bar.swapped
+{
+    background-color: limegreen;
+}
+
+.bar.pivot
+{
+    background-color: purple;
+}
+
+#stats 
+{
     width: 25%;
     height: 150px;
     margin: 20px auto; 
@@ -52,7 +88,7 @@ body
     border-radius: 10px;
     background-color: steelblue;
     border: 2px solid black;
-    
+
     display: flex; 
     align-items: center; 
     justify-content: space-around;
