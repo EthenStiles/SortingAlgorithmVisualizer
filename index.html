@@ -18,12 +18,16 @@
       <option value="bogo">Bogo Sort</option>
     </select>
 
+    <label for="element-count"># of Elements:</label>
+    <input type="number" id="element-count" value="50" min="5" max="200" step="5" />
+
     <button id="generate" onclick="generateBars()">Generate Array</button>
     <button id="sort" onclick="startSort()">Sort</button>
   </div>
 
   <div id="visualization-window"></div>
   <div id="stats">
+    <div id="elements"># elements: 0</div>
     <div id="comparisons"># comparisons: 0</div>
   </div>
 

@@ -1,15 +1,16 @@
 let array = [];
 let waitTime = 0;
 let stopSorting = false;
-let numBars = 200;
 let numComparisons = 0;
 let comparisonElt = document.getElementById("comparisons");
+let numBars = 0;
 
 function generateBars() 
 {
     stopSorting = true;
     numComparisons = 0;
-    updateComparisons();
+    numBars = parseInt(document.getElementById("element-count").value) || 50;
+    updateStats();
     const container = document.getElementById('visualization-window');
     container.innerHTML = '';
     array = [];
@@ -30,9 +31,11 @@ function sleep(ms)
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function updateComparisons()
+function updateStats()
 {
     comparisonElt.textContent = `# comparisons: ${numComparisons}`;
+    document.getElementById("elements").textContent = `# elements: ${numBars}`
+
 }
 
 async function bubbleSort() 
@@ -48,7 +51,7 @@ async function bubbleSort()
             const h2 = parseInt(bars[j + 1].style.height);
             
             numComparisons++;
-            updateComparisons();
+            updateStats();
             if (h1 > h2)
             {
                 bars[j].style.height = `${h2}px`;
@@ -73,7 +76,7 @@ async function insertionSort()
             const height2 = parseInt(bars[j].style.height);
 
             numComparisons++;
-            updateComparisons();
+            updateStats();
 
             if (height1 > height2) 
             {
@@ -111,7 +114,7 @@ async function selectionSort()
         }
 
         numComparisons++;
-        updateComparisons();
+        updateStats();
         if (minIndex !== i) 
         {
             let temp = bars[i].style.height;
@@ -231,7 +234,7 @@ async function startSort()
 {
     const selectedAlgorithm = document.getElementById('algorithm-select').value;
     numComparisons = 0;
-    updateComparisons();
+    updateStats();
     disableControls();
     stopSorting = false;
     switch (selectedAlgorithm) 

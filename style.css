@@ -31,7 +31,7 @@ body
 }
 
 #stats {
-    width: 90%;
+    width: 25%;
     height: 150px;
     margin: 20px auto; 
     border: 2px solid black;
@@ -40,16 +40,19 @@ body
 
     display: flex; 
     align-items: center; 
-    justify-content: space-around;
+    justify-content: center;
+    gap: 25px;
     text-align: center; 
 }
 
 #stats * 
 {
-    margin: 20px; 
     height: 80%;
+    width: 200px;
     border-radius: 10px;
-    background-color: blueviolet;
+    background-color: steelblue;
+    border: 2px solid black;
+    
     display: flex; 
     align-items: center; 
     justify-content: space-around;
