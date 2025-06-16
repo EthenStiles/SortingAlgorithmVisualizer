@@ -1,13 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Your Webpage</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Sorting Algorithm Visualizer</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Hello, world!</h1>
-    <script src="script.js"></script>
+  <h1>Sorting Algorithm Visualizer</h1>
+
+  <div class="controls">
+    <select id="algorithm-select">
+      <option value="bubble">Bubble Sort</option>
+      <option value="insertion">Insertion Sort</option>
+      <option value="selection">Selection Sort</option>
+      <option value="quick">Quick Sort</option>
+      <option value="bogo">Bogo Sort</option>
+    </select>
+
+    <button id="generate" onclick="generateBars()">Generate Array</button>
+    <button id="start" onclick="startSort()">Sort</button>
+  </div>
+
+  <div id="visualization-window"></div>
+  <div id="stats">
+    <div id="comparisons"># comparisons: 0</div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
