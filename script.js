@@ -224,6 +224,8 @@ async function bogoSort()
     allowedTries = 1000;
     while (!isSorted(bars))
     {
+        if (stopSorting) 
+            return;
         shuffle(bars);
         await sleep(waitTime);
         tries++;
