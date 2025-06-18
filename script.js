@@ -292,7 +292,8 @@ async function startSort()
         case 'quick':
             const bars = document.querySelectorAll(".bar");
             await quickSort(bars);
-            playSortedAnimation();
+            if (!stopSorting)
+                playSortedAnimation(); 
             break;
         case 'bogo':
             await bogoSort();
