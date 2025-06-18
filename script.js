@@ -9,7 +9,8 @@ function generateBars()
 {
     stopSorting = true;
     numComparisons = 0;
-    numBars = parseInt(document.getElementById("element-count").value) || 50;
+    numBars = parseInt(document.getElementById("element-count").value);
+    waitTime = parseInt(document.getElementById("delay").value);
     updateStats();
     const container = document.getElementById('visualization-window');
     container.innerHTML = '';
@@ -35,7 +36,6 @@ function updateStats()
 {
     comparisonElt.textContent = `# comparisons: ${numComparisons}`;
     document.getElementById("elements").textContent = `# elements: ${numBars}`
-
 }
 
 async function bubbleSort() 
