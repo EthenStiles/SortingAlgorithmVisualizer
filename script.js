@@ -373,7 +373,18 @@ async function playSortedAnimation()
 
 async function startSort() 
 {
-    initAudio();
+    let soundChecked = document.getElementById("sound-toggle").checked;
+    if (!soundChecked)
+    {
+        soundEnabled = false;
+        stopAudio();
+    }
+    else
+    {
+        soundEnabled = true;
+        initAudio();
+    }
+    
     const selectedAlgorithm = document.getElementById('algorithm-select').value;
     numComparisons = 0;
     updateStats();
