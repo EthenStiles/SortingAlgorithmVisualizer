@@ -1,9 +1,18 @@
 let array = [];
-let waitTime = 25;
+let waitTime = 0;
 let stopSorting = false;
 let numComparisons = 0;
-let comparisonElt = document.getElementById("comparisons");
 let numBars = 0;
+const maxHeight = document.getElementById('visualization-window').clientHeight;
+
+//audio
+const audio = new Audio()
+let soundEnabled = true;
+const minFreq = 200
+const maxFreq = 800;
+let sharedAudioCtx = null;
+let sharedGainNode = null;
+let sharedOscillator = null;
 
 function generateBars() 
 {
@@ -15,7 +24,6 @@ function generateBars()
     const container = document.getElementById('visualization-window');
     container.innerHTML = '';
     array = [];
-    let maxHeight = container.clientHeight;
     for (let i = 0; i < numBars; i++) 
     {
         const height = Math.floor(Math.random() * (maxHeight - (maxHeight * 0.1))) + 20;
@@ -34,8 +42,59 @@ function sleep(ms)
 
 function updateStats()
 {
-    comparisonElt.textContent = `# comparisons: ${numComparisons}`;
+    document.getElementById("comparisons").textContent = `# comparisons: ${numComparisons}`;
     document.getElementById("elements").textContent = `# elements: ${numBars}`
+}
+
+function initAudio() 
+{
+    if (!sharedAudioCtx) {
+        sharedAudioCtx = new window.AudioContext;
+
+        sharedOscillator = sharedAudioCtx.createOscillator();
+        sharedOscillator.type = 'sine';
+
+        sharedGainNode = sharedAudioCtx.createGain();
+        sharedGainNode.gain.value = 0.01;
+
+        sharedOscillator.connect(sharedGainNode);
+        sharedGainNode.connect(sharedAudioCtx.destination);
+
+        sharedOscillator.start();
+    }
+}
+
+function playToneForBar(barHeight) {
+    if (!soundEnabled || !sharedAudioCtx || !sharedOscillator) return;
+
+    const frequency = minFreq + (barHeight / maxHeight) * (maxFreq - minFreq);
+
+    // Smoothly change the frequency to avoid stepping/buzz
+    const now = sharedAudioCtx.currentTime;
+    sharedOscillator.frequency.cancelScheduledValues(now);
+    sharedOscillator.frequency.setTargetAtTime(frequency, now, 0.01);
+}
+
+function stopAudio() 
+{
+    if (sharedOscillator) 
+    {
+        sharedOscillator.stop();
+        sharedOscillator.disconnect();
+        sharedOscillator = null;
+    }
+
+    if (sharedGainNode) 
+    {
+        sharedGainNode.disconnect();
+        sharedGainNode = null;
+    }
+
+    if (sharedAudioCtx) 
+    {
+        sharedAudioCtx.close();
+        sharedAudioCtx = null;
+    }
 }
 
 async function bubbleSort() 
@@ -45,9 +104,17 @@ async function bubbleSort()
     {
         for (let j = 0; j < bars.length - i - 1; j++) 
         {
-            if (stopSorting) return;
+            if (stopSorting)
+                {
+                    stopAudio();
+                    return;
+                } 
 
+            //highlight bar
             bars[j + 1].classList.add('current');
+
+            const barHeight = parseInt(bars[j + 1].style.height);
+            playToneForBar(barHeight);
             
             const h1 = parseInt(bars[j].style.height);
             const h2 = parseInt(bars[j + 1].style.height);
@@ -61,6 +128,7 @@ async function bubbleSort()
                 await sleep(waitTime);
             }
 
+            //unhighlight bar
             bars[j + 1].classList.remove('current');
         }
     }
@@ -76,12 +144,14 @@ async function insertionSort()
         let j = i;
         while (j > 0) 
         {
-            if (stopSorting) return;
-            //const barA = bars[j - 1];
+            if (stopSorting)
+            {
+                stopAudio();
+                return;
+            } 
+        
             const barB = bars[j];
-
-            // Add highlight to both bars being compared
-            //barA.classList.add('current');
+            playToneForBar(parseInt(barB.style.height));
             barB.classList.add('current');
             
             const height1 = parseInt(bars[j - 1].style.height);
@@ -105,12 +175,10 @@ async function insertionSort()
 
             else 
             {
-                //barA.classList.remove('current');
                 barB.classList.remove('current');
                 break;
             }
 
-            //barA.classList.remove('current');
             barB.classList.remove('current');
         }
     }
@@ -126,8 +194,13 @@ async function selectionSort()
         let minIndex = i;
         for (let j = i + 1; j < bars.length; j++) 
         {
-            if (stopSorting) return;
-            
+            if (stopSorting)
+            {
+                stopAudio();
+                return;
+            } 
+                
+            playToneForBar(parseInt(bars[j].style.height));
             bars[j].classList.add('current');
             
             numComparisons++;
@@ -163,7 +236,12 @@ async function selectionSort()
 
 async function quickSort(bars, start = 0, end = null) {
   
-    if (stopSorting) return;
+    if (stopSorting)
+    {
+        stopAudio();
+        return;
+    } 
+
     if (end === null) end = bars.length - 1;
 
     if (start < end) 
@@ -181,7 +259,14 @@ async function partition(bars, low, high)
     let i = low - 1;
     for (let j = low; j < high; j++) 
     {
-        if (stopSorting) return;
+        if (stopSorting)
+        {
+            stopAudio();
+            return;
+        } 
+
+        playToneForBar(parseInt(bars[j].style.height));
+        
         bars[j].classList.add('current');  // Highlight the current bar being compared
     
         numComparisons++;
@@ -224,13 +309,18 @@ async function bogoSort()
     allowedTries = 1000;
     while (!isSorted(bars))
     {
-        if (stopSorting) 
+        if (stopSorting)
+        {
+            stopAudio();
             return;
+        } 
+            
         shuffle(bars);
         await sleep(waitTime);
         tries++;
         if (tries > allowedTries)
         {
+            stopAudio();
             alert(`Gave up after ${allowedTries} attempts.`)
             return;
         }
@@ -260,6 +350,8 @@ function shuffle(bars)
         let temp = bars[i].style.height;
         bars[i].style.height = bars[j].style.height;
         bars[j].style.height = temp;
+
+        playToneForBar(parseInt(bars[i].style.height));
     }
 }
 
@@ -269,12 +361,19 @@ async function playSortedAnimation()
     for (let i = 0; i < bars.length; i++)
     {
         bars[i].style.backgroundColor = "indianred";
-        await sleep(20);
+
+        const barHeight = parseInt(bars[i].style.height);
+        playToneForBar(barHeight);
+
+        await sleep(waitTime);
     }
+
+    stopAudio();
 }
 
 async function startSort() 
 {
+    initAudio();
     const selectedAlgorithm = document.getElementById('algorithm-select').value;
     numComparisons = 0;
     updateStats();
