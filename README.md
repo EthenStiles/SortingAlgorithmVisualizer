@@ -7,7 +7,7 @@ Download the zip file or clone the GitHub repo. Afterwards, open index.html in y
 git clone https://github.com/EthenStiles/SortingAlgorithmVisualizer
 ```
 
-# Example
+# Demonstration
 ![Demo](demo.gif)
 
 # Features
