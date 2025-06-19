@@ -20,6 +20,3 @@ git clone https://github.com/EthenStiles/SortingAlgorithmVisualizer
 - User defined number of elements
 - User defined animation speed
 - Audio output based on size of highlighted element
-
-# TODO
-Allow user to mute audio
